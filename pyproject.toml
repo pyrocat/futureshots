@@ -1,3 +1,9 @@
+[project]
+name = "futureshots"
+version = "0.1.0"
+description = "A diary for smart and lazy street photogs"
+requires-python = ">=3.10"
+
 [tool.poetry]
 name = "futureshots"
 version = "0.1.0"
