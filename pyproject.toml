@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "futureshots"
+version = "0.1.0"
+description = "A diary for smart and lazy street photogs"
+authors = ["pyrocat"]
+license = "GPL"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+Django = "^4.2.3"
+djangorestframework = "^3.13.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
