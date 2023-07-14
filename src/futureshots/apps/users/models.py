@@ -13,7 +13,7 @@ class User(AbstractUser):
 class Ban(models.Model):
     imposed_by = models.ForeignKey(User, on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    banned_until = models.DateTimeField(null=True)
+    until = models.DateTimeField()
 
 
 class Membership(models.Model):
