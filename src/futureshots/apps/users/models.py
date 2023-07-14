@@ -6,11 +6,12 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
     bio = models.TextField()
-    image = models.ImageField()
-    last_login = models.DateTimeField()
+    userpic = models.ImageField()
+    last_active = models.DateTimeField(auto_now=True)
 
 
 class Ban(models.Model):
+    imposed_by = models.ForeignKey(User, on_delete=models.CASCADE)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     banned_until = models.DateTimeField(null=True)
 
@@ -25,11 +26,15 @@ class Membership(models.Model):
 
 
 class Community(models.Model):
-    users = models.ManyToManyField(User)
+    users = models.ManyToManyField(User, through=Membership)
     name = models.CharField()
     description = models.TextField()
 
 
 class Position(models.Model):
-    name = models.CharField()
+    class PositionChoices(models.TextChoices):
+        ADMIN = "admin"
+        MEMBER = "member"
+
+    name = models.CharField(choices=PositionChoices, default=PositionChoices.MEMBER)
     permissions = models.JSONField()
