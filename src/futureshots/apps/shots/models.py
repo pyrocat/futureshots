@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 
 # Create your models here.
 
@@ -32,6 +33,10 @@ class Finding(models.Model):
 
     is_private = models.BooleanField(default=True)
 
+    comments = GenericRelation(
+        "discussions.Comment", related_name="finding", related_query_name="finding"
+    )
+
 
 class Picture(models.Model):
     author = models.ForeignKey(
@@ -44,6 +49,10 @@ class Picture(models.Model):
     photo = models.ImageField()
     description = models.TextField(blank=True, null=True)
 
+    comments = GenericRelation(
+        "discussions.Comment", related_name="picture", related_query_name="picture"
+    )
+
 
 class Concept(models.Model):
     author = models.ForeignKey(
@@ -53,10 +62,14 @@ class Concept(models.Model):
         "users.Community", on_delete=models.SET_NULL, null=True
     )
 
-    name = models.CharField(max_length=255)
-    description = models.TextField()
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
 
     created_on = models.DateTimeField(auto_now_add=True)
+
+    comments = GenericRelation(
+        "discussions.Comment", related_name="concept", related_query_name="concept"
+    )
 
 
 class Tag(models.Model):
