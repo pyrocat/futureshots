@@ -3,7 +3,10 @@ from django.urls import path, include
 
 from rest_framework import routers
 
-from users.views import UserViewSet, GroupViewSet
+from api.v0.users.views import UserViewSet, GroupViewSet
+
+app_name = "api_v0"
+
 
 router = routers.DefaultRouter()
 

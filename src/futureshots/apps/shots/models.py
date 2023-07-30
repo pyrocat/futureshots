@@ -8,13 +8,16 @@ from django.contrib.contenttypes.fields import GenericRelation
 class Location(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
 
-    latitude = models.DecimalField(null=True, blank=True)
-    longitude = models.DecimalField(null=True, blank=True)
+    latitude_ref = models.CharField(max_length=20)
+
+    latitude = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
+    longitude_ref = models.CharField(max_length=20)
+    longitude = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
 
     altitude = models.PositiveIntegerField(
         verbose_name="Altitude above sea level, meters", null=True, blank=True
     )
-    direction = models.DecimalField(null=True, blank=True)
+
 
 
 class Finding(models.Model):
@@ -30,7 +33,7 @@ class Finding(models.Model):
         verbose_name="A snapshot picturing a possible interesting place for photos"
     )
 
-    desired_lighting_direction = models.DecimalField(null=True, blank=True)
+    desired_lighting_direction = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
 
     description = models.TextField(null=True, blank=True)
     audio_description = models.FileField(null=True, blank=True)

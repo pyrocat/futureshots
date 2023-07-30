@@ -88,6 +88,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "users.Profile"
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -121,4 +122,10 @@ __all__ = [
     "USE_TZ",
     "MIDDLEWARE",
     "TEMPLATES",
+    "DEBUG",
+    "DEFAULT_AUTO_FIELD",
+    "SECRET_KEY",
+    "ALLOWED_HOSTS",
+    "AUTH_USER_MODEL",
+    "ROOT_URLCONF",
 ]

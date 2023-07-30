@@ -1,6 +1,6 @@
 from django.urls import include, path
 
-from api.v0.users import urls as auth_urls
+from api.authentication import urls as auth_urls
 from api.v0 import urls as api_v0_urls
 
 urlpatterns = [

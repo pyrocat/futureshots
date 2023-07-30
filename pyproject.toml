@@ -17,6 +17,8 @@ python = "^3.10"
 Django = "^4.2.3"
 djangorestframework = "^3.13.1"
 knox = "0.1.14"
+pillow = "^10.0.0"
+exif = "^1.6.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"

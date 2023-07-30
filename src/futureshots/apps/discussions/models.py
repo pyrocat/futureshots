@@ -7,7 +7,7 @@ from django.conf import settings
 
 
 class Comment(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     # generic relation to other commentable models
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
@@ -25,7 +25,7 @@ class Comment(models.Model):
 
 
 class Rating(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True)
 
     is_positive = models.BooleanField(default=True)
 
