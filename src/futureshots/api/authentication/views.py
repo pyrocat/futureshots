@@ -3,6 +3,7 @@ from django.contrib.auth import login, logout
 from rest_framework import generics, views, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.authtoken.views import ObtainAuthToken
 
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -23,7 +24,7 @@ class LoginView(generics.GenericAPIView):
 
     def post(self, request, *args, **kwargs):
         self.serializer = self.get_serializer(
-            data=self.request.data, context={"request": self.request}
+            data=self.request.data, context={"request": request}
         )
 
         self.serializer.is_valid(raise_exception=True)
@@ -35,3 +36,15 @@ class LoginView(generics.GenericAPIView):
         user_serializer = UserSerializer(self.user)
 
         return Response(data=user_serializer.data, status=status.HTTP_200_OK)
+
+
+
+class LogoutView(generics.GenericAPIView):
+
+    def post(self, request, *args, **kwargs):
+        logout(self.request, self.user)
+        return Response(data={"success": "logout"}, status=status.HTTP_200_OK)
+
+class GetToken(ObtainAuthToken):
+    permission_classes = (AllowAny,)
+

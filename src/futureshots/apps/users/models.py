@@ -14,7 +14,7 @@ class Profile(AbstractUser):
 class Ban(models.Model):
     imposed_by = models.ForeignKey(Profile, related_name="bans_imposed", on_delete=models.CASCADE)
     user = models.ForeignKey(Profile, related_name="bans_subjected", on_delete=models.CASCADE)
-    until = models.DateTimeField(auto_now_add=True)
+    until = models.DateTimeField()
     reason = models.TextField(null=True)
 
 

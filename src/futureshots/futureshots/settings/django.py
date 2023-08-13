@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     "apps.discussions",
     "apps.shots",
     "apps.users",
+    "rest_framework.authtoken"
 ]
 
 MIDDLEWARE = [

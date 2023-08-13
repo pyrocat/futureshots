@@ -48,8 +48,10 @@ docs/_build/
 .pybuilder/
 target/
 
+
 # Jupyter Notebook
 .ipynb_checkpoints
+*.ipynb
 
 # IPython
 profile_default/
@@ -71,3 +73,5 @@ venv.bak/
 # mkdocs documentation
 /site
 
+000*.py
+/images
