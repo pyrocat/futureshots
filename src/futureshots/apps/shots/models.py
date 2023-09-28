@@ -7,21 +7,22 @@ from django.utils import timezone
 
 
 class Location(models.Model):
-
-
     latitude_ref = models.CharField(max_length=20)
 
-    latitude = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
+    latitude = models.DecimalField(
+        decimal_places=2, max_digits=10, null=True, blank=True
+    )
     longitude_ref = models.CharField(max_length=20)
-    longitude = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
+    longitude = models.DecimalField(
+        decimal_places=2, max_digits=10, null=True, blank=True
+    )
 
     altitude = models.PositiveIntegerField(
         verbose_name="Altitude above sea level, meters", null=True, blank=True
     )
 
 
-
-class Finding(models.Model):
+class Shot(models.Model):
     """
     A draft for future photos
     """
@@ -33,49 +34,19 @@ class Finding(models.Model):
 
     created_on = models.DateTimeField(default=timezone.now)
 
-    photo = models.ImageField(
-        verbose_name="A snapshot picturing a possible interesting place for photos"
+    photo = models.CharField(
+        max_length=255,
+        verbose_name="A snapshot picturing a possible interesting place for photos",
     )
-
-    description = models.TextField(null=True, blank=True)
-    audio_description = models.FileField(null=True, blank=True)
+    text = models.TextField(null=True, blank=True)
 
     is_private = models.BooleanField(default=True)
 
-    comments = GenericRelation("discussions.Comment", related_query_name="finding")
-    ratings = GenericRelation("discussions.Rating", related_query_name="finding")
+    comments = GenericRelation("social.Comment", related_query_name="shot")
+    ratings = GenericRelation("social.Rating", related_query_name="shot")
 
 
-class Picture(models.Model):
-    """
-    Final picture made from the draft
-    """
-
-    author = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        verbose_name="Photographer",
-        related_name="pictures",
-        on_delete=models.CASCADE,
-    )
-    draft = models.ForeignKey(
-        Finding,
-        verbose_name="The prototype for this picture",
-        related_name="pictures",
-        on_delete=models.SET_NULL,
-        null=True,
-    )
-    concept = models.ForeignKey(
-        "Concept", on_delete=models.SET_NULL, related_name="pictures", null=True
-    )
-
-    photo = models.ImageField(verbose_name="Actual photo file")
-    description = models.TextField(blank=True, null=True)
-
-    comments = GenericRelation("discussions.Comment", related_query_name="picture")
-    ratings = GenericRelation("discussions.Rating", related_query_name="finding")
-
-
-class Concept(models.Model):
+class Project(models.Model):
     """
     A concept comprising multiple findings
     """
@@ -88,11 +59,11 @@ class Concept(models.Model):
     )
 
     title = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
+    text = models.TextField(blank=True, null=True)
 
     created_on = models.DateTimeField(auto_now_add=True)
 
-    comments = GenericRelation("discussions.Comment", related_query_name="concept")
+    comments = GenericRelation("social.Comment", related_query_name="project")
 
 
 class Tag(models.Model):

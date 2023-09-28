@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.shots",
     "apps.users",
     "rest_framework.authtoken"
+    "mptt",
 ]
 
 MIDDLEWARE = [
