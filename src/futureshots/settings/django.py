@@ -20,7 +20,7 @@ SECRET_KEY = "django-insecure-+2l3^#m9if=rssa8_l0t4burnu-d9$p$b-u0k0-5(&8juvwh%g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -34,10 +34,10 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "apps.activity_tracker",
-    "apps.discussions",
+    "apps.comments",
     "apps.shots",
     "apps.users",
-    "rest_framework.authtoken"
+    "rest_framework.authtoken",
     "mptt",
 ]
 
@@ -51,7 +51,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "futureshots.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -69,7 +69,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "futureshots.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Password validation

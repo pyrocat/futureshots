@@ -4,7 +4,7 @@ from django.urls import path, include
 from rest_framework_nested import routers
 
 from api.v0.users.views import UserViewSet, GroupViewSet, CommunityViewSet
-from api.v0.findings.views import ShotViewSet, ShotCommentViewSet
+from api.v0.shots.views import ShotViewSet, ShotCommentViewSet
 
 
 app_name = "api_v0"

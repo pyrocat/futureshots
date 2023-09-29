@@ -26,24 +26,21 @@ class Shot(models.Model):
     """
     A draft for future photos
     """
-
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    location = models.OneToOneField(Location, on_delete=models.CASCADE)
-    tags = models.ManyToManyField("Tag", null=True)
-
-    created_on = models.DateTimeField(default=timezone.now)
-
-    photo = models.CharField(
-        max_length=255,
+    photo = models.ImageField(
+        upload_to="images/shots",
         verbose_name="A snapshot picturing a possible interesting place for photos",
     )
     text = models.TextField(null=True, blank=True)
 
+    location = models.OneToOneField(Location, on_delete=models.CASCADE, null=True)
+    tags = models.ManyToManyField("Tag")
+    created_on = models.DateTimeField(default=timezone.now)
     is_private = models.BooleanField(default=True)
 
-    comments = GenericRelation("social.Comment", related_query_name="shot")
-    ratings = GenericRelation("social.Rating", related_query_name="shot")
+    comments = GenericRelation("comments.Comment", related_query_name="shot")
+    ratings = GenericRelation("comments.Rating", related_query_name="shot")
 
 
 class Project(models.Model):
@@ -63,7 +60,7 @@ class Project(models.Model):
 
     created_on = models.DateTimeField(auto_now_add=True)
 
-    comments = GenericRelation("social.Comment", related_query_name="project")
+    comments = GenericRelation("comments.Comment", related_query_name="project")
 
 
 class Tag(models.Model):
