@@ -21,7 +21,7 @@ class Coords(BaseModel):
     def dec_latitude(self) -> float:
         h, m, s = self.gps_latitude
         res = h + m / 60 + s / 3600
-        if self.gps_latitude_ref is "S":
+        if self.gps_latitude_ref == "S":
             res = -res
         return res
 
@@ -29,7 +29,7 @@ class Coords(BaseModel):
     def dec_longitude(self) -> float:
         h, m, s = self.gps_longitude
         res = h + m / 60 + s / 3600
-        if self.gps_longitude_ref is "W":
+        if self.gps_longitude_ref == "W":
             res = -res
         return res
 

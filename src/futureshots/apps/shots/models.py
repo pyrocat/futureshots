@@ -7,17 +7,13 @@ from django.utils import timezone
 
 
 class Location(models.Model):
-    latitude_ref = models.CharField(max_length=20)
-
     latitude = models.DecimalField(
         decimal_places=2, max_digits=10, null=True, blank=True
     )
-    longitude_ref = models.CharField(max_length=20)
     longitude = models.DecimalField(
         decimal_places=2, max_digits=10, null=True, blank=True
     )
-
-    altitude = models.PositiveIntegerField(
+    altitude = models.DecimalField(
         verbose_name="Altitude above sea level, meters", null=True, blank=True
     )
 
@@ -36,7 +32,7 @@ class Shot(models.Model):
 
     location = models.OneToOneField(Location, on_delete=models.CASCADE, null=True)
     tags = models.ManyToManyField("Tag")
-    created_on = models.DateTimeField(default=timezone.now)
+    created_on = models.DateTimeField()
     is_private = models.BooleanField(default=True)
 
     comments = GenericRelation("comments.Comment", related_query_name="shot")
