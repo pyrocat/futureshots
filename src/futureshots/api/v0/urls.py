@@ -4,7 +4,7 @@ from django.urls import path, include
 from rest_framework_nested import routers
 
 from api.v0.users.views import UserViewSet, GroupViewSet, CommunityViewSet
-from api.v0.shots.views import ShotViewSet, ShotCommentViewSet
+from api.v0.shots.views import ShotViewSet, ShotCommentViewSet, TagViewSet
 
 
 app_name = "api_v0"
@@ -15,6 +15,8 @@ router.register(r"users", UserViewSet)
 router.register(r"groups", GroupViewSet)
 router.register(r"communities", CommunityViewSet)
 router.register(r"shots", ShotViewSet)
+router.register(r"tags", TagViewSet)
+
 
 shots_router = routers.NestedSimpleRouter(router, parent_prefix="shots", lookup="shot")
 shots_router.register("comments", ShotCommentViewSet, basename="shot-comment")

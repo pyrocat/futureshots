@@ -14,7 +14,11 @@ class Location(models.Model):
         decimal_places=2, max_digits=10, null=True, blank=True
     )
     altitude = models.DecimalField(
-        verbose_name="Altitude above sea level, meters", null=True, blank=True
+        decimal_places=2,
+        max_digits=10,
+        verbose_name="Altitude above sea level, meters",
+        null=True,
+        blank=True,
     )
 
 
@@ -22,6 +26,7 @@ class Shot(models.Model):
     """
     A draft for future photos
     """
+
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     photo = models.ImageField(
