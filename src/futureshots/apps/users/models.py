@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 class Profile(AbstractUser):
     about = models.TextField(null=True, blank=True)
     userpic = models.ImageField(null=True, blank=True)
-    slug = models.SlugField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=100, unique=True, db_index=True)
     last_active = models.DateTimeField(auto_now=True)
 
 

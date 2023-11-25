@@ -11,6 +11,9 @@ from exif import GpsAltitudeRef, Image
 from pydantic import BaseModel, Field, ValidationError
 
 
+from loguru import logger
+
+
 class GPSdata(BaseModel):
     gps_latitude: tuple[float, float, float]
     gps_latitude_ref: Literal["N", "S"]
@@ -22,7 +25,7 @@ class GPSdata(BaseModel):
     gps_timestamp: tuple[int, int, int]
 
     @classmethod
-    def from_image(cls, image) -> "GPSdata":
+    def from_image(cls, image: Image) -> "GPSdata":
         return cls(
             gps_latitude=image.get("gps_latitude"),
             gps_latitude_ref=image.get("gps_latitude_ref"),
@@ -88,14 +91,16 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ShotSerializer(serializers.ModelSerializer):
-    author = serializers.IntegerField(
-        source="author.id", read_only=True, default=CurrentUser()
+    author = serializers.PrimaryKeyRelatedField(
+        read_only=True, default=serializers.CurrentUserDefault()
     )
     # Location author and date must be set programmatically
     location = LocationSerializer(many=False, read_only=True)
-    created_on = serializers.DateTimeField(allow_null=True, read_only=True)
-
-    tags = TagSerializer(many=True)
+    created_at = serializers.DateTimeField(allow_null=True, read_only=True)
+    posted_at = serializers.DateTimeField(allow_null=True, read_only=True)
+    tags = serializers.SlugRelatedField(
+        many=True, slug_field="name", allow_null=True, queryset=Tag.objects.all()
+    )
     photo = serializers.ImageField()
     text = serializers.CharField(allow_blank=True)
     is_private = serializers.BooleanField()
@@ -106,23 +111,42 @@ class ShotSerializer(serializers.ModelSerializer):
             "author",
             "location",
             "tags",
-            "created_on",
+            "created_at",
+            "posted_at",
             "photo",
             "text",
             "is_private",
         ]
 
+    def run_validators(self, value):
+        """
+        Add read_only fields with defaults to value before running validators.
+        """
+        # в родительском методе дефолтные значения полей не добавлялись
+        # к value как заявлено.
+        if isinstance(value, dict):
+            to_validate = self._read_only_defaults()
+            value.update(to_validate)
+            to_validate = value
+        else:
+            to_validate = value
+        super().run_validators(to_validate)
+
     def create(self, validated_data):
         photo = validated_data.get("photo")
+        tags = validated_data.pop("tags")
 
-        with open(photo.temporary_file_path(), 'rb') as file:
+        logger.debug(f"{tags=}")
+
+        with open(photo.temporary_file_path(), "rb") as file:
             image = Image(img_file=file)
 
         gps_data = GPSdata.from_image(image)
         validated_data["location"] = self._get_location(gps_data)
         validated_data["created_on"] = gps_data.datetime
-        print(validated_data["tags"])
         new_shot = Shot.objects.create(**validated_data)
+        if tags:
+            new_shot.tags.add(tags)
         return new_shot
 
     def _get_location(self, gps_data: GPSdata) -> Location:
@@ -132,5 +156,3 @@ class ShotSerializer(serializers.ModelSerializer):
             altitude=gps_data.dec_altitude,
         )
         return location
-
-

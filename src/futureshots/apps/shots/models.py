@@ -37,7 +37,8 @@ class Shot(models.Model):
 
     location = models.OneToOneField(Location, on_delete=models.CASCADE, null=True)
     tags = models.ManyToManyField("Tag")
-    created_on = models.DateTimeField()
+    posted_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     is_private = models.BooleanField(default=True)
 
     comments = GenericRelation("comments.Comment", related_query_name="shot")
@@ -65,4 +66,4 @@ class Project(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, unique=True)

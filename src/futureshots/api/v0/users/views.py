@@ -7,15 +7,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
 
+from rest_framework_nested.viewsets import NestedViewSetMixin
+
 from apps.users.models import Community, Ban
 
 
 from .serializers import UserSerializer, GroupSerializer, CommunitySerializer, BanSerializer
 
 User = get_user_model()
-
-
-
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -49,6 +48,7 @@ class UserViewSet(viewsets.ModelViewSet):
         ban = Ban.objects.get_or_create(**serializer.validated_data)
         ban.save()
         return Response(serializer.validated_data)
+
 
 
 class GroupViewSet(viewsets.ModelViewSet):
