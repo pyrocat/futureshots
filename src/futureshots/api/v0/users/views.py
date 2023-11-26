@@ -2,17 +2,25 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 from rest_framework import viewsets
-from rest_framework import permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
-
+from rest_framework.permissions import IsAdminUser
 from rest_framework_nested.viewsets import NestedViewSetMixin
 
 from apps.users.models import Community, Ban
 
+from utils.permisssions import AuthorPermission
 
-from .serializers import UserSerializer, GroupSerializer, CommunitySerializer, BanSerializer
+
+from .serializers import (
+    UserSerializer,
+    GroupSerializer,
+    CommunitySerializer,
+    BanSerializer,
+)
+
+from loguru import logger
 
 User = get_user_model()
 
@@ -24,31 +32,47 @@ class UserViewSet(viewsets.ModelViewSet):
 
     serializer_class = UserSerializer
     queryset = User.objects.all().order_by("-date_joined")
+    permission_classes = ((AuthorPermission | IsAdminUser),)
 
-
-    @action(detail=True, methods=['post'])
+    @action(detail=True, methods=["post"])
     def ban(self, request, pk=None):
-
         if not self.request.user.is_staff:
             raise PermissionDenied("Cannot ban a user")
 
-        banned_user = User.objects.get(pk=pk)
-
         data = {
-            "imposed_by": request.user,
-            "banned_user": banned_user,
+            "banned_user": pk,
             "until": request.data.get("until"),
             "reason": request.data.get("reason"),
         }
 
+        logger.debug(data)
+
         serializer = BanSerializer(data=data, context={"request": request})
+        serializer.is_valid(raise_exception=True)
 
-        serializer.is_valid()
+        logger.debug(serializer.validated_data)
 
-        ban = Ban.objects.get_or_create(**serializer.validated_data)
+        ban, created = Ban.objects.get_or_create(
+            author=serializer.validated_data.pop("author"),
+            user=serializer.validated_data.pop("user"),
+            defaults=serializer.validated_data,
+        )
+
+        if created:
+            logger.info(f"User <{pk}> has been banned")
+        else:
+            ban.until = serializer.validated_data["until"]
+            ban.position = serializer.validated_data["reason"]
+
         ban.save()
         return Response(serializer.validated_data)
 
+
+class UserBansViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = Ban.objects.all()
+    serializer_class = BanSerializer
+
+    parent_lookup_kwargs = {"user_pk": "user_id"}
 
 
 class GroupViewSet(viewsets.ModelViewSet):
@@ -63,3 +87,4 @@ class GroupViewSet(viewsets.ModelViewSet):
 class CommunityViewSet(viewsets.ModelViewSet):
     queryset = Community.objects.all()
     serializer_class = CommunitySerializer
+    permission_classes = ((AuthorPermission | IsAdminUser),)

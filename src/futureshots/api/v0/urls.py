@@ -3,7 +3,7 @@ from django.urls import path, include
 
 from rest_framework_nested import routers
 
-from api.v0.users.views import UserViewSet, GroupViewSet, CommunityViewSet
+from api.v0.users.views import UserViewSet, GroupViewSet, CommunityViewSet, UserBansViewSet
 from api.v0.shots.views import ShotViewSet, ShotCommentViewSet, TagViewSet
 
 
@@ -17,6 +17,8 @@ router.register(r"communities", CommunityViewSet)
 router.register(r"shots", ShotViewSet)
 router.register(r"tags", TagViewSet)
 
+users_router = routers.NestedSimpleRouter(router, parent_prefix="users", lookup="user")
+users_router.register("bans", UserBansViewSet, basename="user-ban")
 
 shots_router = routers.NestedSimpleRouter(router, parent_prefix="shots", lookup="shot")
 shots_router.register("comments", ShotCommentViewSet, basename="shot-comment")
@@ -24,4 +26,5 @@ shots_router.register("comments", ShotCommentViewSet, basename="shot-comment")
 urlpatterns = [
     path("", include(router.urls)),
     path("", include(shots_router.urls)),
+    path("", include(users_router.urls)),
 ]

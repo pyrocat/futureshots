@@ -1,8 +1,11 @@
 from django.db import models
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.auth import get_user_model
+
 from django.utils import timezone
 
+User = get_user_model()
 # Create your models here.
 
 
@@ -27,7 +30,9 @@ class Shot(models.Model):
     A draft for future photos
     """
 
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+        User, on_delete=models.SET_DEFAULT, default=User.get_default_pk
+    )
 
     photo = models.ImageField(
         upload_to="images/shots",
@@ -51,7 +56,7 @@ class Project(models.Model):
     """
 
     author = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True
+        User, on_delete=models.SET_DEFAULT, default=User.get_default_pk
     )
     community = models.ForeignKey(
         "users.Community", on_delete=models.SET_NULL, null=True

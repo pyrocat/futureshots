@@ -68,15 +68,6 @@ class GPSdata(BaseModel):
         return datetime.combine(_date, _time, tzinfo=timezone.utc)
 
 
-class CurrentUser(serializers.CurrentUserDefault):
-    """
-    Supply the current user as a default value,
-    """
-
-    def __call__(self, serializer_field) -> int | None:
-        user = super().__call__(serializer_field)
-        return user
-
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -108,6 +99,7 @@ class ShotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shot
         fields = [
+            "id",
             "author",
             "location",
             "tags",
