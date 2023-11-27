@@ -13,10 +13,6 @@ from rest_framework.exceptions import (
 User = get_user_model()
 
 
-def _get_default_date():
-    return now() + timedelta(weeks=4)
-
-
 class BriefUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -54,6 +50,8 @@ class CommunitySerializer(serializers.ModelSerializer):
 
 
 class BanSerializer(serializers.ModelSerializer):
+    DEFAULT_BAN_PERIOD_WEEKS = 4
+
     author = serializers.SlugRelatedField(
         slug_field="username",
         many=False,
@@ -88,21 +86,19 @@ class BanSerializer(serializers.ModelSerializer):
         super().run_validators(to_validate)
 
     def validate(self, attrs):
-        logger.debug(attrs)
         if not attrs["until"]:
-            attrs["until"] = _get_default_date()
+            attrs["until"] = self._default_ban_date()
+        # Ban date must not be in the past
         elif attrs["until"] < now():
             raise ValidationError(detail="Wrong datetime")
 
-        logger.debug(Ban.objects.filter(
-            author=attrs["author"], user=attrs["user"], until__gte=attrs["until"]
-        ).count())
-
-        if Ban.objects.filter(
-            author=attrs["author"], user=attrs["user"], until__gte=attrs["until"]
-        ).count():
+        # Do not allow to ban user if they are already banned for a longer time period.
+        if Ban.objects.filter(user=attrs["user"], until__gte=attrs["until"]).count():
             raise ValidationError(
                 detail="This user is already banned for a longer period of time."
             )
 
         return attrs
+
+    def _default_ban_date(self) -> datetime:
+        return now() + timedelta(weeks=self.DEFAULT_BAN_PERIOD_WEEKS)

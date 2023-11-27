@@ -22,6 +22,7 @@ class Profile(AbstractUser):
 
 
 class Ban(models.Model):
+    # TODO make bans community-dependent
     author = models.ForeignKey(
         Profile,
         verbose_name="Imposed by",

@@ -1,7 +1,7 @@
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
@@ -45,12 +45,8 @@ class UserViewSet(viewsets.ModelViewSet):
             "reason": request.data.get("reason"),
         }
 
-        logger.debug(data)
-
         serializer = BanSerializer(data=data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-
-        logger.debug(serializer.validated_data)
 
         ban, created = Ban.objects.get_or_create(
             author=serializer.validated_data.pop("author"),
@@ -58,14 +54,14 @@ class UserViewSet(viewsets.ModelViewSet):
             defaults=serializer.validated_data,
         )
 
-        if created:
-            logger.info(f"User <{pk}> has been banned")
-        else:
-            ban.until = serializer.validated_data["until"]
-            ban.position = serializer.validated_data["reason"]
-
+        ban.until = serializer.validated_data["until"]
+        ban.position = serializer.validated_data["reason"]
         ban.save()
-        return Response(serializer.validated_data)
+
+        if created:
+            return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class UserBansViewSet(NestedViewSetMixin, viewsets.ReadOnlyModelViewSet):
